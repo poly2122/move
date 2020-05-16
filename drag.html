@@ -1,0 +1,66 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+    <link rel="stylesheet" href="reset.min.css">
+    <style>
+        .box{
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100px;
+            height: 100px;
+            background: red;
+            cursor: move;
+        }
+    </style>
+</head>
+<body>
+    <!-- 实现拖拽 -->
+    <div class="box" id="box" style="left: 375px;top:59px"></div>
+
+    <!-- js -->
+    <script>
+        let box=document.getElementById('box');
+        // 在不确定当前元素的某个事件行为是否可能绑定多个方法的情况下，我们尽可能使用DOM2事件绑定的方式来实现
+        // box.onmousedown=down;
+
+        box.addEventListener('mousedown', down);
+      
+
+
+        // 鼠标按下做的事情
+        // 1.记录鼠标和盒子的起始位置（需要在move方法中用到 ,所以把值都记录在元素的自定义属性上，这样在move就可以通过自定义属性来获取）
+
+        function down(ev){
+            this.startX=ev.clientX;
+            this.startY=ev.clientY;
+            this.startL=this.offsetLeft;
+            this.startT=this.offsetTop;
+            // 这样处理后move/up的this是document（我们只要保证this是盒子本身才可以
+            // 
+            this._MOVE=move.bind(this);
+            this._UP=up.bind(this);
+            document.addEventListener('mousemove',this._MOVE);
+            document.addEventListener('mouseup',this._UP);
+        }
+        // 鼠标移动做的事情
+        function move(ev){
+         let curl=ev.clientX-this.startX+this.startL,
+             curT=ev.clientY-this.startY+this.startT;
+          /*    this.style.top=curT+'px';
+             this.style.left=curT+'px' */
+            //  上面这两行用一行代替
+             this.style.cssText=`left:${curl}px;top:${curT}px;`;
+      
+        }
+        // 鼠标抬起时做的事情
+        function up(ev){
+            document.removeEventListener('mousemove',this._MOVE);
+            document.removeEventListener('mouseup',this._UP);
+        }
+    </script>
+</body>
+</html>
